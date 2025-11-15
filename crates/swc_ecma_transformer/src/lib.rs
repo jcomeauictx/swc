@@ -61,3 +61,4 @@ impl Options {
         hook_pass(hook)
     }
 }
+
