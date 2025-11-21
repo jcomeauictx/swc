@@ -2175,6 +2175,26 @@ impl Pure<'_> {
 
         if self.options.side_effects && self.options.pristine_globals {
             match e {
+                // Handle new expressions with side-effect free class constructors
+                Expr::New(NewExpr {
+                    span, callee, args, ..
+                }) if matches!(**callee, Expr::Class(..)) => {
+                    if let Expr::Class(ClassExpr { class, .. }) = &**callee {
+                        if !swc_ecma_utils::class_has_side_effect(self.expr_ctx, class) {
+                            report_change!("Dropping a pure new class expression");
+
+                            self.changed = true;
+                            *e = self
+                                .make_ignored_expr(
+                                    *span,
+                                    args.iter_mut().flatten().map(|arg| arg.expr.take()),
+                                )
+                                .unwrap_or(Invalid { span: DUMMY_SP }.into());
+                            return;
+                        }
+                    }
+                }
+
                 Expr::New(NewExpr {
                     span, callee, args, ..
                 }) if callee.is_one_of_global_ref_to(

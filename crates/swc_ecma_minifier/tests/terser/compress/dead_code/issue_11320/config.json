@@ -1,0 +1,5 @@
+{
+    "side_effects": true,
+    "pristine_globals": true,
+    "dead_code": true
+}
