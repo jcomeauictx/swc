@@ -5,6 +5,6 @@ target/debug/swc:
 $(HOME)/.cargo/bin/swc: target/debug/swc | $(HOME)/.cargo/bin
 	cargo install || cp -f $< $@
 test: $(HOME)/.cargo/bin/swc $(TESTJS)
-	cat $(TESTJS) | $< compile
+	cat $(TESTJS) | $< compile --config-file es3.swcrc | head
 $(HOME)/.cargo/bin:
 	mkdir -p $@
