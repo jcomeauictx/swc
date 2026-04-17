@@ -2067,7 +2067,13 @@ impl MacroNode for CondExpr {
         formatting_space!(emitter);
         punct!(emitter, ":");
         formatting_space!(emitter);
-        emit!(self.alt);
+        if matches!(*self.alt, Expr::Assign(_)) {
+            punct!(emitter, "(");
+            emit!(self.alt);
+            punct!(emitter, ")");
+        } else {
+            emit!(self.alt);
+        }
 
         Ok(())
     }
